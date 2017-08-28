@@ -7,6 +7,7 @@
 
 include_recipe 'kubernetes::master_detect'
 include_recipe "kubernetes::sdn_#{node['kubernetes']['sdn']}" if node['kubernetes']['use_sdn']
+include_recipe 'firewall'
 
 directory "/opt/kubernetes/#{node['kubernetes']['version']}/bin" do
   recursive true
@@ -80,6 +81,12 @@ if node['kubernetes']['token_auth']
     source 'tokens.csv.erb'
     variables(users: Chef::EncryptedDataBagItem.load(node['kubernetes']['databag'], 'users')['users'])
   end
+end
+
+firewall_rule 'kube_apiserver' do
+  port node['kubernetes']['api']['secure_port']
+  protocol :tcp
+  command :allow
 end
 
 include_recipe "kubernetes::master_#{install_via}"
