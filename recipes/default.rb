@@ -8,6 +8,7 @@
 require 'base64'
 
 include_recipe 'kubernetes::packages'
+include_recipe "kubernetes::#{node['kubernetes']['container_engine']}"
 include_recipe 'kubernetes::master_detect'
 include_recipe "kubernetes::sdn_#{node['kubernetes']['sdn']}"
 include_recipe 'kubernetes::networking'
@@ -63,8 +64,20 @@ kubelet_args = [
   "--image-gc-low-threshold=#{node['kubernetes']['kubelet']['image_gc_low_threshold']}",
   "--image-gc-high-threshold=#{node['kubernetes']['kubelet']['image_gc_high_threshold']}",
   "--cadvisor-port=#{node['kubernetes']['kubelet']['cadvisor_port']}",
+  "--cgroup-driver=#{node['kubernetes']['kubelet']['cgroup_driver']}",
   "--v=#{node['kubernetes']['kubelet']['verbosity']}"
 ]
+
+
+case node['kubernetes']['container_engine']
+when 'docker'
+  kubelet_args << '--container-runtime=docker'
+  kubelet_args << '--container-runtime-endpoint=unix:///var/run/dockershim.sock'
+when 'cri-o'
+  kubelet_args << '--container-runtime=remote'
+  kubelet_args << '--container-runtime-endpoint=unix:///var/run/crio.sock'
+end
+
 
 if node['kubernetes']['kubelet']['system_reserved']
   res = node['kubernetes']['kubelet']['system_reserved']
