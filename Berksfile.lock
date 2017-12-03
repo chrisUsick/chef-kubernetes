@@ -2,6 +2,9 @@ DEPENDENCIES
   apt
   etcd (~> 4.1)
   firewall
+  kernel_module
+    git: https://github.com/Shopify/chef-kernel_module.git
+    revision: b45fd37ff3771712d0ec027b82b239219a4a5c95
   kubernetes
     path: .
     metadata: true
@@ -30,6 +33,7 @@ GRAPH
     apt (>= 0.0.0)
     etcd (~> 4.1)
     firewall (>= 0.0.0)
+    kernel_module (>= 0.0.0)
     network_interfaces_v2 (>= 0.0.0)
     systemd (>= 3.1.0)
     tar (>= 0.0.0)

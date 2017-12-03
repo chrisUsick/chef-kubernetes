@@ -15,6 +15,7 @@ package 'dbus'
 package 'apt-transport-https'
 package 'conntrack'
 package 'linux-image-extra-virtual' if node['docker']['settings']['storage-driver'] == 'aufs'
+package 'ipvsadm' if node['kubernetes']['proxy']['mode'] == 'ipvs'
 
 apt_repository 'docker' do
   uri 'https://apt.dockerproject.org/repo'

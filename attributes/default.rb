@@ -35,7 +35,7 @@ default['kubernetes']['token_auth_file']                    = '/etc/kubernetes/k
 default['kubernetes']['cloud_config']                       = ''
 default['kubernetes']['cloud_provider']                     = ''
 default['kubernetes']['docker']                             = 'unix:///var/run/docker.sock'
-default['kubernetes']['feature_gates']                      = ['RotateKubeletServerCertificate=true']
+default['kubernetes']['feature_gates']                      = ['RotateKubeletServerCertificate=true','SupportIPVSProxyMode=true']
 default['kubernetes']['api']['bind_address']                = '0.0.0.0'
 default['kubernetes']['api']['insecure_bind_address']       = '127.0.0.1'
 default['kubernetes']['api']['insecure_port']               = 8080
@@ -69,6 +69,7 @@ default['kubernetes']['md5']['proxy']                       = '18fa4d5b4cb946b26
 default['kubernetes']['md5']['scheduler']                   = 'a7c47bc2c321993296d8e4e93e7335f1'
 default['kubernetes']['md5']['kubectl']                     = '849c0983f7e2507c97a6c3a22f677220'
 default['kubernetes']['md5']['kubelet']                     = 'b27ada5eaf31d953b20c646947e7ee64'
+default['kubernetes']['proxy']['mode']                      = 'iptables' # Other possible values: 'ipvs', 'userspace'
 default['kubernetes']['addon_manager']['version']           = 'v6.5'
 default['kubernetes']['multimaster']['access_via']          = 'haproxy' # other possible values are: direct, dns
 default['kubernetes']['multimaster']['haproxy_url']         = '127.0.0.1'

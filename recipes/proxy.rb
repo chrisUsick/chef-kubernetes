@@ -10,11 +10,19 @@ include_recipe 'kubernetes::kubeconfig'
 proxy_args = [
   "--bind-address=#{internal_ip(node)}",
   "--hostname-override=#{hostname(node)}",
-  '--proxy-mode=iptables',
+  "--proxy-mode=#{node['kubernetes']['proxy']['mode']}",
   "--feature-gates=#{node['kubernetes']['feature_gates'].join(',')}",
   '--kubeconfig=/etc/kubernetes/system:kube-proxy_config.yaml'
 
 ]
+
+if node['kubernetes']['proxy']['mode'] == 'ipvs'
+  kernel_module 'ip_vs'
+  kernel_module 'ip_vs_rr'
+  kernel_module 'ip_vs_wrr'
+  kernel_module 'ip_vs_sh'
+  kernel_module 'nf_conntrack_ipv4'
+end
 
 if install_via == 'static_pods'
 
