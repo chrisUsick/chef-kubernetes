@@ -108,3 +108,10 @@ if node['kubernetes']['sdn'] == 'weave'
     end
   end
 end
+
+# Cleanup systemd-network kubernetes_services in case of proxy mode ipvs
+if node['kubernetes']['proxy']['mode'] == 'ipvs'
+  systemd_network 'kubernetes_services' do
+    action :delete
+  end
+end

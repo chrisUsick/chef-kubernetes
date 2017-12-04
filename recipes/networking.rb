@@ -19,35 +19,38 @@ end
 ifaddr, ifopts = node['network']['interfaces'][node['kubernetes']['interface']]['addresses'].find { |addr, opts| opts['family'] == 'inet' }
 
 if node['init_package'] == 'systemd'
+  if node['kubernetes']['proxy']['mode'] == 'iptables'
 
-  service 'systemd-networkd' do
-    action [:enable, :start]
-  end
-
-  systemd_network 'kubernetes_services' do
-    address_address "#{ifaddr}/#{ifopts['prefixlen']}"
-    match_name node['kubernetes']['interface']
-    route do
-      destination node['kubernetes']['api']['service_cluster_ip_range']
-      scope 'link'
+    service 'systemd-networkd' do
+      action [:enable, :start]
     end
-    notifies :restart, 'service[systemd-networkd]'
+
+    systemd_network 'kubernetes_services' do
+      address_address "#{ifaddr}/#{ifopts['prefixlen']}"
+      match_name node['kubernetes']['interface']
+      route do
+        destination node['kubernetes']['api']['service_cluster_ip_range']
+        scope 'link'
+      end
+      notifies :restart, 'service[systemd-networkd]'
+    end
   end
 end
 
 if node['init_package'] == 'init' and node['packages'].key?('upstart')
+  if node['kubernetes']['proxy']['mode'] == 'iptables'
 
-  template '/etc/init/kube-service-network-route.conf' do
-    source 'kubernetes_services_upstart.conf.erb'
-    owner 'root'
-    group 'root'
-    mode '0644'
+    template '/etc/init/kube-service-network-route.conf' do
+      source 'kubernetes_services_upstart.conf.erb'
+      owner 'root'
+      group 'root'
+      mode '0644'
+    end
+
+    service 'kube-service-network-route' do
+      action [:start, :enable]
+      provider Chef::Provider::Service::Upstart
+      subscribes :restart, 'template[/etc/init/kube-service-network-route.conf]'
+    end
   end
-
-  service 'kube-service-network-route' do
-    action [:start, :enable]
-    provider Chef::Provider::Service::Upstart
-    subscribes :restart, 'template[/etc/init/kube-service-network-route.conf]'
-  end
-
 end
