@@ -13,6 +13,11 @@
                 "portMappings": true
             },
             "snat": true
+	    <% if node['kubernetes']['proxy']['mode'] == 'ipvs' %>
+	    ,"conditionsV4": [
+                "!", "-d", "<%= node['kubernetes']['api']['service_cluster_ip_range'] %>"
+            ]
+	    <% end %>
         }
     ]
 }
