@@ -18,7 +18,9 @@ proxy_args = [
 if node['kubernetes']['proxy']['mode'] == 'ipvs'
   proxy_args.push "--ipvs-scheduler=#{node['kubernetes']['proxy']['ipvs_scheduler']}"
   kernel_module 'ip_vs'
-  kernel_module "ip_vs_#{node['kubernetes']['proxy']['ipvs_scheduler']}"
+  kernel_module 'ip_vs_rr'
+  kernel_module 'ip_vs_wrr'
+  kernel_module 'ip_vs_sh'
   kernel_module 'nf_conntrack_ipv4'
 end
 
