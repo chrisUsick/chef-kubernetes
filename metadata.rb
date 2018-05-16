@@ -9,6 +9,7 @@ version          '0.1.3'
 chef_version     '>= 12.14'
 
 supports         'ubuntu', '>= 14.04'
+supports         'centos'
 
 depends          'apt'
 depends          'etcd', '~> 5.5'
