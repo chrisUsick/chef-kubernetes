@@ -36,6 +36,20 @@ if node['docker']['built-in']
 
   package 'docker-engine' do
     options '-o Dpkg::Options::="--force-confold"'
+  end if platform_family?('debian', 'ubuntu')
+  if platform_family?('rhel')
+    yum_repository 'docker-ce' do
+      description "Docker Stable repo"
+      baseurl 'https://download.docker.com/linux/centos/7/$basearch/stable'
+      gpgkey 'https://download.docker.com/linux/centos/gpg'
+      action :create
+    end
+    %w(device-mapper-persistent-data lvm2).each { |p| package p }
+    package 'docker-ce'
+  end
+
+  service 'docker' do
+    action :start
   end
 end
 

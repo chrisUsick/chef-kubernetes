@@ -64,9 +64,11 @@ else
   end
 
   service_type = install_via(node)
-
+  etcd_version = node['etcd']['version'].tr('A-z', '')
   etcd_service 'etcd' do
-    action :start
+    action [:create, :start]
+    source "https://github.com/coreos/etcd/releases/download/v#{etcd_version}/etcd-v#{etcd_version}-linux-amd64.tar.gz"
+    checksum 'dff8ae43c49d8c21f9fc1fe5507cc2e86455994ac706b7d92684f389669462a9'
     node_name k8s_ip
     install_method 'binary'
     service_manager service_type
@@ -79,7 +81,7 @@ else
     initial_cluster_token node['etcd']['initial_cluster_token']
     initial_cluster initial_cluster_string
     initial_cluster_state node['etcd']['initial_cluster_state']
-    version node['etcd']['version'].tr('A-z', '')
+    version etcd_version
     not_if do
       etcd_nodes.empty? or etcd_nodes.any?(&:empty?)
     end

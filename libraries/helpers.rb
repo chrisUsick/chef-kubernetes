@@ -6,7 +6,7 @@ module Kubernetes
     def k8s_ip(n = node)
       n['network']['interfaces'][n['kubernetes']['interface']]['addresses']
         .find { |_addr, data| data['family'] == 'inet' }.first
-    rescue
+    rescue 
       '127.0.0.1'
     end
 
